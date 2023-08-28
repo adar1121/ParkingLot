@@ -19,12 +19,14 @@ public class Main {
 
         String[][] logs = {
                 {"11353", "TRUCK", "2020-01-01T00:00:00.000Z", "ENTRANCE"},
-                {"11353", "TRUCK", "2020-01-01T02:00:00.000Z", "EXIT" },
-                {"86453", "CAR", "2020-01-01T04:24:00.000Z", "ENTRANCE"}
+                {"11353", "TRUCK", "2020-01-01T04:00:00.000Z", "EXIT" },
+                {"86453", "CAR", "2020-01-01T04:24:00.000Z", "ENTRANCE"},
+                {"86453", "CAR", "2020-01-01T06:25:00.000Z", "EXIT"}
                 };
 
+//        System.out.println(timeCalculator(logs[0][2]));
 
-        numberOfVehicles(logs);
+        System.out.println(numberOfVehicles(logs));
 
 //        if (time4Numbers >= openingTime & time4Numbers < closingTime) {
 //            System.out.print("What Action you want to do EXIT / ENTRANCE? ");
@@ -49,9 +51,10 @@ public class Main {
 //    static int getTime4Letters()
 
 
-    static void numberOfVehicles(String[][] vehicles){
+    static int numberOfVehicles(String[][] vehicles){
         String vehicleId = "";
         String enterTime ="";
+        String exitTime = "";
         int count = 0;
 
         for(int i=0; i<vehicles.length-1; i++)
@@ -61,45 +64,47 @@ public class Main {
             {
                 if(vehicles[i][3] == "ENTRANCE")
                 {
+                    enterTime = vehicles[i][2];
                     if(vehicles[i+1][3] == "EXIT")
                     {
-                        //we are good to add this item
-                        //check vehicle condtoion ( 1 2 3 )
-
-                        //extract to function which check the vehicle type and its hour
+                        exitTime = vehicles[i+1][2];
                         if(vehicles[i][1] == "TRUCK")
                         {
-                            //calc the exit-enter
-                            //check if res >= 3 --> if yes : count++
-                            // else nothing
+                            if ((timeCalculator(exitTime) - timeCalculator(enterTime)) > 300){
+                                count++;
+                            }
                         }
                         else if(vehicles[i][1] == "CAR")
                         {
-                            //calc the exit-enter
-                            //check if res >= 2 --> if yes : count++ else nothing
+                            if ((timeCalculator(exitTime) - timeCalculator(enterTime)) > 200){
+                                count++;
+                            }
                         }
                         else if(vehicles[i][1] == "MOTORCYCLE")
                         {
-                            //calc the exit-enter
-                            //check if res >= 1 --> if yes : count++ else nothing
+                            if ((timeCalculator(exitTime) - timeCalculator(enterTime)) > 100){
+                                count++;
+                            }
                         }
                     }
                 }
 
             }
         }
+
+        return count;
     }
 
-//    static int timeCalculator(String instant){
-//        Instant timeStamp = Instant.parse(instant);
-//        ZoneId zone = ZoneId.of("UTC");
-//        String actionType;
-//        ZonedDateTime zonedDateTime = timeStamp.atZone(zone);
-//        int hours = zonedDateTime.getHour();
-//        int minutes = zonedDateTime.getMinute();
-//        int time4Numbers = hours * 100 + minutes;
-//        return time4Numbers;
-//    }
+    static int timeCalculator(String instant){
+        Instant timeStamp = Instant.parse(instant);
+        ZoneId zone = ZoneId.of("UTC");
+        String actionType;
+        ZonedDateTime zonedDateTime = timeStamp.atZone(zone);
+        int hours = zonedDateTime.getHour();
+        int minutes = zonedDateTime.getMinute();
+        int time4Numbers = hours * 100 + minutes;
+        return time4Numbers;
+    }
 
 
 
