@@ -1,112 +1,130 @@
+import com.sun.jdi.Value;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Scanner;
-
 public class Main {
-   static int searchCount = 0;
-   static int numberOfVehicles = 0;
+    static int countTruck=0,countCar=0, countMotorcycle = 0;
     public static void main(String[] args) {
-//        Scanner scanner = new Scanner(System.in);
-//        int vehicleID;
-//        int vehicleType;
-//        int openingTime = 0600;
-//        int closingTime = 2330;
-
-
-
-
         String[][] logs = {
                 {"11353", "TRUCK", "2020-01-01T00:00:00.000Z", "ENTRANCE"},
-                {"11353", "TRUCK", "2020-01-01T04:00:00.000Z", "EXIT" },
+                {"11353", "TRUCK", "2020-01-01T02:00:00.000Z", "EXIT" },
                 {"86453", "CAR", "2020-01-01T04:24:00.000Z", "ENTRANCE"},
-                {"86453", "CAR", "2020-01-01T06:25:00.000Z", "EXIT"}
-                };
+                {"86453", "CAR", "2020-01-01T04:24:00.000Z", "ENTRANCE"}
+        };
+        //question 1
+        //System.out.println(numberOfVehicles(logs,1));
 
-//        System.out.println(timeCalculator(logs[0][2]));
+        //question 2
+        System.out.println(numberOfVehicles(logs,2));
 
-        System.out.println(numberOfVehicles(logs));
-
-//        if (time4Numbers >= openingTime & time4Numbers < closingTime) {
-//            System.out.print("What Action you want to do EXIT / ENTRANCE? ");
-//
-//            switch (actionType = scanner.next().toUpperCase()) {
-//                case "ENTRANCE":
-//                    System.out.println("Entrance");
-//                    break;
-//                case "EXIT":
-//                    System.out.println("Exit");
-//                    break;
-//                default:
-//                    System.out.println("Wrong Action. There is only Exit or Entrance are Available");
-//            }
-//        }
-//        else {
-//            System.out.println("Parking lot is close");
-//        }
-
+        //question 3
+        //checkHowManyVehiclesForEachType(logs);
+        //System.out.println(countTruck);
+        //System.out.println(countCar);
+        //System.out.println(countMotorcycle);
     }
-
-//    static int getTime4Letters()
-
-
-    static int numberOfVehicles(String[][] vehicles){
+    static int numberOfVehicles(String[][] vehicles, int questionNum){
+        int count = 0;
+        int countVehiclesWhichSpentTheNight = 0;
         String vehicleId = "";
         String enterTime ="";
         String exitTime = "";
-        int count = 0;
 
-        for(int i=0; i<vehicles.length-1; i++)
+        for(int vehicleCheckCounter =0; vehicleCheckCounter<vehicles.length; vehicleCheckCounter++)
         {
-            vehicleId = vehicles[i][0];
-            if(vehicles[i+1][0] == vehicleId)
-            {
-                if(vehicles[i][3] == "ENTRANCE")
+            vehicleId = vehicles[vehicleCheckCounter][0];
+            for (int j = 0; j < vehicles.length; j++){
+                if(vehicles[j][0] == vehicleId)
                 {
-                    enterTime = vehicles[i][2];
-                    if(vehicles[i+1][3] == "EXIT")
+                    if(vehicles[vehicleCheckCounter][3] == "ENTRANCE")
                     {
-                        exitTime = vehicles[i+1][2];
-                        if(vehicles[i][1] == "TRUCK")
+                        enterTime = vehicles[vehicleCheckCounter][2];
+                        if(vehicles[j][3] == "EXIT")
                         {
-                            if ((timeCalculator(exitTime) - timeCalculator(enterTime)) > 300){
-                                count++;
-                            }
+                            exitTime = vehicles[j][2];
+                            count = checkVehicleType(vehicles,vehicleCheckCounter,exitTime,enterTime, count);
                         }
-                        else if(vehicles[i][1] == "CAR")
-                        {
-                            if ((timeCalculator(exitTime) - timeCalculator(enterTime)) > 200){
-                                count++;
-                            }
-                        }
-                        else if(vehicles[i][1] == "MOTORCYCLE")
-                        {
-                            if ((timeCalculator(exitTime) - timeCalculator(enterTime)) > 100){
-                                count++;
-                            }
+                        else{
+                            countVehiclesWhichSpentTheNight = checkHowManySpentTheNight(enterTime,countVehiclesWhichSpentTheNight);
                         }
                     }
                 }
-
             }
         }
+        if(questionNum == 1)
+        {
+            return count;
+        }
+        else
+        {
+            return countVehiclesWhichSpentTheNight;
+        }
 
+    }
+
+    static int checkVehicleType(String[][] vehicles, int vehicleCheckCounter, String exitTime, String enterTime, int count)
+    {
+        if(vehicles[vehicleCheckCounter][1] == "TRUCK")
+        {
+            count = countNumOfVehicles(enterTime, exitTime, 180,count);
+        }
+        else if(vehicles[vehicleCheckCounter][1] == "CAR")
+        {
+            count = countNumOfVehicles(enterTime,exitTime,120,count);
+        }
+        else if(vehicles[vehicleCheckCounter][1] == "MOTORCYCLE")
+        {
+            count = countNumOfVehicles(enterTime,exitTime,60,count);
+        }
         return count;
     }
 
-    static int timeCalculator(String instant){
-        Instant timeStamp = Instant.parse(instant);
-        ZoneId zone = ZoneId.of("UTC");
-        String actionType;
-        ZonedDateTime zonedDateTime = timeStamp.atZone(zone);
-        int hours = zonedDateTime.getHour();
-        int minutes = zonedDateTime.getMinute();
-        int time4Numbers = hours * 100 + minutes;
-        return time4Numbers;
+    static int countNumOfVehicles(String enterTime, String exitTime, int minutes, int count)
+    {
+        Duration duration = Duration.between(Instant.parse(enterTime), Instant.parse(exitTime));
+        if(duration.toMinutes() > minutes)
+        {
+            count++;
+        }
+        return count;
+    }
+    static int checkHowManySpentTheNight(String enterTime,int howManyVehicleSpentTheNight)
+    {
+        //check diff of enter time and now time
+        //if the diff is equals or bigger then 1 ? so vehicle spent the night---conut++
+        //nowTime - enterTime
+        Duration duration = Duration.between(Instant.parse(enterTime), Instant.now());
+        if(duration.toDays() >= 1){
+            howManyVehicleSpentTheNight++;
+        }
+        return howManyVehicleSpentTheNight;
     }
 
-
-
-
+    static void checkHowManyVehiclesForEachType(String[][] vehicles)
+    {
+        for (int i = 0; i < vehicles.length; i++) {
+            for (int j = 0; j < vehicles.length; j++) {
+                if(vehicles[i][j] == "CAR")
+                {
+                    //check enter and exit
+                    countCar++;
+                }
+                else if (vehicles[i][j] == "TRUCK")
+                {
+                    //check enter and exit
+                    countTruck++;
+                }
+                else if (vehicles[i][j] == "MOTORCYCLE")
+                {
+                    //check enter and exit
+                    countMotorcycle++;
+                }
+            }
+        }
+    }
 }
