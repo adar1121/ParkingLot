@@ -1,21 +1,10 @@
-import com.sun.jdi.Value;
-
-import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Scanner;
-
 public class Main {
     static int insideQuestionNum = 0;
 
     public static void main(String[] args) {
         String[][] logs = {
                 {"86453", "CAR", "2020-01-01T04:24:00.000Z", "ENTRANCE"},
-                {"11353", "TRUCK", "2020-01-01T05:00:00.000Z", "EXIT"},
+                {"11353", "TRUCK", "2020-02-01T05:00:00.000Z", "EXIT"},
                 {"11353", "TRUCK", "2020-01-01T00:00:00.000Z", "ENTRANCE"},
                 {"86453", "CAR", "2020-01-01T08:25:00.000Z", "EXIT"}
         };

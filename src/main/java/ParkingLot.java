@@ -1,5 +1,7 @@
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 
 public class ParkingLot {
     private int howManyVehicleSpentTheNight;
@@ -60,9 +62,7 @@ public class ParkingLot {
                 for (int j = 0; j < vehicles.length; j++) {
                     if (vehicles[j][0] == vehicleId && vehicles[j][3] == "EXIT") {
                         countTillNotFindSameVehicleID = 0;
-                        if (vehicles[vehicleCheckCounter][3] == "ENTRANCE") {
                             enterTime = vehicles[vehicleCheckCounter][2];
-                            if (vehicles[j][3] == "EXIT") {
                                 exitTime = vehicles[j][2];
                                 if (insideQuestionNum == 1) {
                                     count = checkVehicleType(vehicles, vehicleCheckCounter, exitTime, enterTime, count); // Question 1
@@ -71,8 +71,6 @@ public class ParkingLot {
                                 if (insideQuestionNum == 2) {
                                     checkHowManySpentTheNight(enterTime, exitTime);
                                 }
-                            }
-                        }
                     } else {
                         countTillNotFindSameVehicleID++;
                         if (insideQuestionNum == 2 && countTillNotFindSameVehicleID == vehicles.length) {
@@ -118,9 +116,6 @@ public class ParkingLot {
     }
 
     public int checkHowManySpentTheNight(String enterTime, String exitTime) {
-        //check diff of enter time and now time
-        //if the diff is equals or bigger then 1 ? so vehicle spent the night---conut++
-        //nowTime - enterTime
         Duration duration = Duration.between(Instant.parse(enterTime), (Instant.parse(exitTime)));
         if (duration.toDays() >= 1) {
             howManyVehicleSpentTheNight++;
